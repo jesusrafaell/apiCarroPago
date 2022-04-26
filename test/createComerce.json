@@ -1,0 +1,56 @@
+{
+	"commerce": {
+		"idActivityXAfiliado": "720004108",
+		"comerDesc": "Nombre del Comercio",
+		"comerTipoPer": "1",
+		"comerCodigoBanco": "0102",
+		"comerCuentaBanco": "01021234567891044346",
+		"comerRif": "V25500100",
+		"comerCodTipoCont": "1",
+		"comerTipoPos": "1",
+		"comerObservaciones": "",
+		"comerCodAliado": null,
+		"comerPuntoAdicional": 0,
+		"comerCodigoBanco2": "",
+		"comerCuentaBanco2": "",
+		"comerCodigoBanco3": "",
+		"comerCuentaBanco3": "",
+		"locationCommerce": {
+			"estado": "Distrito Capital",
+			"municipio": "LIBERTADOR",
+			"ciudad": "Barrio 1",
+			"parroquia": "CATEDRAL",
+			"casa": "Local1"
+		},
+		"locationContact": {
+			"estado": "Distrito Capital",
+			"municipio": "LIBERTADOR",
+			"ciudad": "Barrio 1",
+			"parroquia": "CATEDRAL2",
+			"casa": "11-12"
+		},
+		"locationPos": {
+			"estado": "Distrito Capital",
+			"municipio": "LIBERTADOR",
+			"ciudad": "Barrio 1",
+			"parroquia": "CATEDRAL3",
+			"casa": "Local1"
+		},
+		"daysOperacion": {
+			"Lun": true,
+			"Mar": true,
+			"Mie": true,
+			"Jue": true,
+			"Vie": true,
+			"Sab": true,
+			"Dom": true
+		}
+	},
+	"contacto": {
+		"contNombres": "Programing",
+		"contApellidos": "Tranred",
+		"contTelefLoc": "04126889569",
+		"contTelefMov": null,
+		"contMail": "tranredcarro@correo.com"
+	}
+}
