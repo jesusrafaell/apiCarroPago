@@ -30,7 +30,6 @@ export default (req: Request, res: Response, next: NextFunction) => {
 			next();
 		}
 	} catch (err: any) {
-		err.code = 403;
-		next(err);
+		res.status(400).json(err);
 	}
 };
