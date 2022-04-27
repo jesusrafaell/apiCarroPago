@@ -15,7 +15,7 @@ createConnection()
 		app.use(cors);
 
 		//Rutas con token
-		//preRoutes(app);
+		preRoutes(app);
 
 		//Routes
 		Routes(app);

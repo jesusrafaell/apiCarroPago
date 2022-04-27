@@ -9,39 +9,20 @@ import Contactos from '../../db/models/Contactos';
 import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 
 import { DateTime } from 'luxon';
-import { DataCommerce, LocationData } from '../../interfaces/commerce';
+import { DataCommerce } from '../../interfaces/commerce';
+import { daysToString, locationToString } from '../../utils/formatString';
 
 //'import Users from '../../db/models/users';
 //import Afiliado from '../../db/models/afiliado';
 //import Commerce from '../../db/models/commerce';
 
-export const daysToString = (value: any) => {
-	let text: string = '';
-	for (const item of Object.entries(value)) {
-		if (item[1]) {
-			text = text + (text.length ? ',' : '') + item[0].slice(0, 3);
-		}
-	}
-	return text;
-};
-
-export const locationToString = (value: LocationData) => {
-	let text: string = '';
-	for (const item of Object.entries(value)) {
-		if (item[1]) {
-			text = text + (text.length ? ', ' : '') + item[1];
-		}
-	}
-	return text;
-};
-
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
 		const dataCommerce: DataCommerce = req.body;
 		const { commerce, contacto } = dataCommerce;
-		//data body
-		if (!dataCommerce) throw { message: 'No existe comercio Para registrar', code: 400 };
-		//const { id_commerce, id_client, bank_account_num, id_product, pos, number_post }: any = fmData;
+
+		if (!dataCommerce.commerce || !dataCommerce.contacto)
+			throw { message: 'No existe comercio Para registrar', code: 400 };
 
 		//Format for CarroPago
 		const newCommerce: any = {
@@ -93,7 +74,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			console.log('Comercio ', commerce.comerRif, ' ya existe');
 		}
 
-		console.log(comercioSave);
+		//console.log(comercioSave);
 
 		//Contacto
 		const newContacto: any = {
@@ -103,33 +84,33 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			contTelefLoc: contacto.contTelefLoc,
 			contTelefMov: contacto.contTelefLoc,
 			contMail: contacto.contMail,
-			contCodUsuario: '',
-			contFreg: '',
+			contCodUsuario: null,
+			contFreg: null,
 		};
 
+		//console.log(comercioSave?.comerCod);
+
 		let contactoSave = await getRepository(Contactos).findOne({
-			where: { contCodComer: comercioSave!.comerCod, contMail: contacto.contMail },
+			where: { contCodComer: comercioSave!.comerCod },
 		});
 
+		//console.log('contacto', contactoSave);
+
 		if (!contactoSave) {
-			contactoSave = await getRepository(Comercios).save(newContacto);
+			contactoSave = await getRepository(Contactos).save(newContacto);
 		} else {
 			console.log('Contacto ', contacto.contMail, ' ya existe');
 		}
 
-		console.log(contactoSave);
+		//console.log(contactoSave);
 
 		const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
 		while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
 		const cxaCod: string = cxaCodAfi.join('');
 
-		console.log('bug1', cxaCodAfi.join(''));
-
 		let comerXafiSave = await getRepository(ComerciosXafiliado).findOne({
 			where: { cxaCodComer: comercioSave!.comerCod },
 		});
-
-		console.log('bug2', comerXafiSave);
 
 		if (!comerXafiSave) {
 			comerXafiSave = await getRepository(ComerciosXafiliado).save({
@@ -140,10 +121,10 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
 		}
 
-		console.log(comerXafiSave);
+		//console.log(comerXafiSave);
 
 		res.status(200).json({ message: 'comercio creado' });
 	} catch (err) {
-		next(err);
+		res.status(400).json(err);
 	}
 };

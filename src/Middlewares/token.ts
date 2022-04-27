@@ -15,11 +15,10 @@ export default (req: Request, res: Response, next: NextFunction) => {
 
 		// use
 		if (result) {
-			if (req.headers?.authorization!) {
-				const token: string = req.headers?.authorization!;
+			if (req.headers['authorization']) {
+				const token: string = req.headers['authorization'].split(' ')[1];
 
 				const Resp: any = jwt.verify(token, Key);
-				// console.log('Resp',Resp);
 
 				req.headers.token = Resp;
 				req.headers.token_text = token;

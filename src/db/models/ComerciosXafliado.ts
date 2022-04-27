@@ -1,13 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ synchronize: false })
+@Entity('ComerciosXafiliado', { synchronize: false })
 export default class ComerciosXafiliado {
-	@Column({ nullable: true })
-	cxaCodAfi!: string;
-
-	@Column({ nullable: true })
-	cxaCodComer!: number;
-
 	@PrimaryGeneratedColumn()
 	cxaId!: number;
+
+	@Column({ nullable: false })
+	cxaCodAfi!: string;
+
+	@Column({ nullable: false })
+	cxaCodComer!: number;
 }

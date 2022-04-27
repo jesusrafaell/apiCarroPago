@@ -6,6 +6,6 @@ import auth from './auth';
 import commerce from './commerce';
 
 export default (app: Application) => {
-	//auth(app);
+	auth(app);
 	commerce(app);
 };

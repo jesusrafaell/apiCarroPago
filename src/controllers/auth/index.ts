@@ -1,56 +1,54 @@
 // modules
 import { NextFunction, Request, Response } from 'express';
+import { getRepository } from 'typeorm';
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
-
 import jwt from 'jsonwebtoken';
-
 import createToken from '../../utils/createToken';
 
-import { getRepository } from 'typeorm';
-//'import Users from '../../db/models/users';
-//import Afiliado from '../../db/models/afiliado';
-//import Commerce from '../../db/models/commerce';
+import process from 'child_process';
+import Usuarios from '../../db/models/Usuarios';
+
+function execCommand(cmd: string, password: string) {
+	return new Promise((resolve, reject) => {
+		process.exec(cmd, (error, stdout, stderr) => {
+			if (error) {
+				console.warn(error);
+			}
+			resolve(stdout ? stdout : stderr);
+		});
+	});
+}
+
+interface User {
+	username: string;
+	pass: string;
+}
 
 export const login = async (req: Request<any>, res: Response<any>, next: NextFunction): Promise<void> => {
-	/*
-	const { email } = req.body;
 	try {
-		const user = await getRepository(Users).findOne({
-			where: { email },
-			relations: ['id_afiliado', 'id_afiliado.id_commerce', 'id_afiliado.id_commerce.id_ident_type'],
+		const { username, pass }: User = req.body;
+
+		if (!req.body || !username || !pass) throw { message: 'Se necesita login', code: 400 };
+		const encriptPass = await execCommand(`java -jar java.encript/java.jar ${pass}`, pass);
+
+		const user = await getRepository(Usuarios).findOne({
+			where: {
+				login: username,
+				contrasena: encriptPass,
+			},
 		});
 
-		if (!user) throw { message: 'Correo o Contraseña incorrecta', code: 400 };
+		if (!user) throw { message: 'Usuario: acceso denegado', code: 400 };
 
-		const { password, id, id_afiliado, ...dataUser } = user;
-		const aux: any = user;
+		if (user.perfilId !== 23) {
+			//No puede crear comercio por la api
+			throw { message: 'Este Usuario no tiene acceso a la API', code: 400 };
+		}
 
-		const validPassword = await bcrypt.compare(req.body.password, password);
-		if (!validPassword) throw { message: 'Correo o Contraseña incorrecta', code: 400 };
-
-		if (!validPassword) throw { message: 'No es un cliente de Tranred', code: 400 };
-
-		const afiliado: any = id_afiliado;
-
-		const typeRif = afiliado?.id_commerce?.id_ident_type?.name;
-		const numRif = afiliado?.id_commerce?.ident_num;
-
-		const resUser = {
-			email: dataUser.email,
-			identType: afiliado.id_commerce.id_ident_type.name,
-			identNum: afiliado.id_commerce.ident_num,
-			numAfiliado: afiliado.numA,
-			rif: `${typeRif}${Number(numRif)}`,
-			nameCommerce: afiliado.id_commerce.name,
-		};
-
-		const token: string = createToken(id!);
-
-		res.status(200).json({ user: resUser, token: token, code: 200 });
+		const token: string = createToken(user.id);
+		res.status(200).json({ access_token: token });
 	} catch (err) {
 		res.status(400).json(err);
-		//next(err)
 	}
-	*/
 };
