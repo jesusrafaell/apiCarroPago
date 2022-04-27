@@ -1,9 +1,6 @@
 // modules
 import { NextFunction, Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import { validationResult } from 'express-validator';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import createToken from '../../utils/createToken';
 
 import process from 'child_process';
