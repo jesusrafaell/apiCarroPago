@@ -2,7 +2,7 @@
 	"type": "mssql",
 	"host": "172.25.0.4",
 	"username": "jhernandez",
-	"password": "Tranred2022",
+	"password": "Tranred123",
 	"database": "CarroPago",
 	"options": {
 		"encrypt": true,
