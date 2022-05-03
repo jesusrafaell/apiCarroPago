@@ -1,9 +1,7 @@
 // modules
 import { NextFunction, Request, Response } from 'express';
-import { validationResult } from 'express-validator';
 
 import { getRepository } from 'typeorm';
-import { Api } from '../../interfaces';
 import Comercios from '../../db/models/Comercios';
 import Contactos from '../../db/models/Contactos';
 import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
@@ -11,10 +9,6 @@ import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import { DateTime } from 'luxon';
 import { DataCommerce } from '../../interfaces/commerce';
 import { daysToString, locationToString } from '../../utils/formatString';
-
-//'import Users from '../../db/models/users';
-//import Afiliado from '../../db/models/afiliado';
-//import Commerce from '../../db/models/commerce';
 
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
