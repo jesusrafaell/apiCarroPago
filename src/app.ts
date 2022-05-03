@@ -1,7 +1,5 @@
-// app's
-//import services from './services';
-import { createConnection, getRepository } from 'typeorm';
-import express, { Application, Request, Response } from 'express';
+import { createConnection } from 'typeorm';
+import express from 'express';
 import Routes from './router';
 import cors from './Middlewares/secure';
 import { preRoutes } from './Middlewares';

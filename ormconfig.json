@@ -1,8 +1,8 @@
 {
 	"type": "mssql",
-	"host": "10.198.72.31",
-	"username": "amendoza",
-	"password": "Am1523246.",
+	"host": "172.25.0.4",
+	"username": "jhernandez",
+	"password": "Tranred123",
 	"database": "CarroPago",
 	"options": {
 		"encrypt": true,
