@@ -84,17 +84,9 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		//console.log(comercioSave?.comerCod);
 
-		let contactoSave = await getRepository(Contactos).findOne({
-			where: { contCodComer: comercioSave!.comerCod },
-		});
+		await getRepository(Contactos).save(newContacto);
 
 		//console.log('contacto', contactoSave);
-
-		if (!contactoSave) {
-			contactoSave = await getRepository(Contactos).save(newContacto);
-		} else {
-			console.log('Contacto ', contacto.contMail, ' ya existe');
-		}
 
 		//console.log(contactoSave);
 
