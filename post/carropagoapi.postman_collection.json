@@ -1,0 +1,88 @@
+{
+	"info": {
+		"_postman_id": "79cf0f4a-51ef-4145-98f7-67fd7a48fc31",
+		"name": "carropagoapi",
+		"description": "Api carropago para la la base de datos de carropago",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Comercio",
+			"item": [
+				{
+					"name": "crear comercio",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjY1LCJpYXQiOjE2NTEwODg0MDIsImV4cCI6MTY1MTA5OTIwMn0.o7zVfEEpw_fa8MYheFeR0GLzS3kOALExHthTXYpXYbo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"commerce\": {\r\n\t\t\"idActivityXAfiliado\": \"720004108\",\r\n\t\t\"comerDesc\": \"Api carro Pago Test\",\r\n\t\t\"comerTipoPer\": \"1\",\r\n\t\t\"comerCodigoBanco\": \"0102\",\r\n\t\t\"comerCuentaBanco\": \"01021234567891044348\",\r\n\t\t\"comerRif\": \"V25500105\",\r\n\t\t\"comerCodTipoCont\": \"1\",\r\n\t\t\"comerTipoPos\": \"1\",\r\n\t\t\"comerObservaciones\": \"\",\r\n\t\t\"comerCodAliado\": null,\r\n\t\t\"comerPuntoAdicional\": 0,\r\n\t\t\"comerCodigoBanco2\": \"\",\r\n\t\t\"comerCuentaBanco2\": \"\",\r\n\t\t\"comerCodigoBanco3\": \"\",\r\n\t\t\"comerCuentaBanco3\": \"\",\r\n\t\t\"locationCommerce\": {\r\n\t\t\t\"estado\": \"Distrito Capital\",\r\n\t\t\t\"municipio\": \"LIBERTADOR\",\r\n\t\t\t\"ciudad\": \"Barrio 1\",\r\n\t\t\t\"parroquia\": \"CATEDRAL\",\r\n\t\t\t\"casa\": \"Local1\"\r\n\t\t},\r\n\t\t\"locationContact\": {\r\n\t\t\t\"estado\": \"Distrito Capital\",\r\n\t\t\t\"municipio\": \"LIBERTADOR\",\r\n\t\t\t\"ciudad\": \"Barrio 1\",\r\n\t\t\t\"parroquia\": \"CATEDRAL2\",\r\n\t\t\t\"casa\": \"11-12\"\r\n\t\t},\r\n\t\t\"locationPos\": {\r\n\t\t\t\"estado\": \"Distrito Capital\",\r\n\t\t\t\"municipio\": \"LIBERTADOR\",\r\n\t\t\t\"ciudad\": \"Barrio 1\",\r\n\t\t\t\"parroquia\": \"CATEDRAL3\",\r\n\t\t\t\"casa\": \"Local1\"\r\n\t\t},\r\n\t\t\"daysOperacion\": {\r\n\t\t\t\"Lun\": true,\r\n\t\t\t\"Mar\": true,\r\n\t\t\t\"Mie\": true,\r\n\t\t\t\"Jue\": true,\r\n\t\t\t\"Vie\": true,\r\n\t\t\t\"Sab\": true,\r\n\t\t\t\"Dom\": true\r\n\t\t}\r\n\t},\r\n\t\"contacto\": {\r\n\t\t\"contNombres\": \"Carlos\",\r\n\t\t\"contApellidos\": \"Gonzalez\",\r\n\t\t\"contTelefLoc\": \"04126889569\",\r\n\t\t\"contTelefMov\": null,\r\n\t\t\"contMail\": \"carlitos2@correo.com\"\r\n\t}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/commerce/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"commerce",
+								"create"
+							]
+						},
+						"description": "Crea comercios en la base de datos, (rellana las tablas de comercio, contacto y comercioXafiliado)\nidActivityXAfiliado: es el numero de afiliado de la actvidad comercial\ncomerDesc: nombre del comercio\ncomerTipoPer: tipo de persona o comercio\ncomerCodigoBanco: primeros 4 digitos del numero de cuenta\ncomerCuentaBanco: numero de cuenta\ncomerRif: rif del comercio\ncomerCodTipoCont: si es contri\ncomerTipoPos: tipo de pos \ncomerObservaciones: texto de informacion especial del comercio\ncomerCodAliado: codigo del aliado\ncomerPuntoAdicional: si se quiere un punto adicional\ncomerCodigoBanco2: primeros 4 digitos del numero de cuenta\ncomerCuentaBanco2: numero de cuenta del banco\ncomerCodigoBanco3: primeros 4 digitos del numero de cuenta \ncomerCuentaBanco3: numero de cuenta del banco\nlocationCommerce: Object con las ubicacion del comercio { estado, municipio, ciudad, parroquia, casa (nro casa, local o nombre de la casa)\nlocationContact: Object con las ubicacion del contacto { estado, municipio, ciudad, parroquia, casa (nro casa, local o nombre de la casa)\nlocaitonPos: Object con las ubicacion de donde se ubicara el pos { estado, municipio, ciudad, parroquia, casa (nro casa, local o nombre de la casa)\ndaysOperacion: Object con los dias de la semana donde se coloca en true los dija que trabaja el comercio y false los dias que no\ncontacto: Objecto con la info del contacto\ncontNombres: nombres del contacto\ncontApellidos: apellidos del contacto\ncontTelefLoc: numero local de tlf del contacto\ncontTelefMov: numero movil de tlf del contacto\ncontMail: email del contacto"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"jhernandez\",\r\n    \"pass\": \"Tranred.18!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "auth/login se indica el username y el pass del usuario de carro pago (dicho usuario tiene que tiener el idperfil 23 para tener acceso a la api) este endpoint retorna un access_token (token de acceso para los endpoint), este token solo dura solo 4h."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
