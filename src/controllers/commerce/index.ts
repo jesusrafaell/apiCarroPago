@@ -1,12 +1,10 @@
 // modules
 import { NextFunction, Request, Response } from 'express';
-
-import { getRepository } from 'typeorm';
-import Comercios from '../../db/models/Comercios';
-import Contactos from '../../db/models/Contactos';
-import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
-
 import { DateTime } from 'luxon';
+import { getConnection, getRepository } from 'typeorm';
+import Comercios from '../../db/models/Comercios';
+import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
+import Contactos from '../../db/models/Contactos';
 import { DataCommerce } from '../../interfaces/commerce';
 import { daysToString, locationToString } from '../../utils/formatString';
 
@@ -20,6 +18,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		//Format for CarroPago
 		const newCommerce: any = {
+			comerCantPost: 1,
 			comerDesc: commerce.comerDesc,
 			comerTipoPer: commerce.comerTipoPer,
 			comerCodigoBanco: commerce.comerCodigoBanco,
@@ -108,6 +107,21 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		}
 
 		//console.log(comerXafiSave);
+
+		const terminal = await getConnection().query(
+			`EXEC SP_new_terminal 
+			@Cant_Term = ${newCommerce.comerCantPost ? newCommerce.comerCantPost : 1},
+			@Afiliado = '720004108',
+			@NombreComercio = '${newCommerce.comerDesc}',
+			@Proveedor = 6,
+			@TipoPos = 'IWL250 GPRS',
+			@Modo = 'Comercio',
+			@TecladoAbierto = 0,
+			@Observaciones = '${newCommerce.comerObservaciones ? newCommerce.comerObservaciones : ''}',
+			@UsuarioResponsable = 'API'`
+		);
+
+		console.log('terminal', terminal[0].id);
 
 		res.status(200).json({ message: 'comercio creado' });
 	} catch (err) {
