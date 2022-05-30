@@ -2,6 +2,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { DateTime } from 'luxon';
 import { getConnection, getRepository } from 'typeorm';
+import { formatTerminals } from '../../utils/formatTerminals';
 import Comercios from '../../db/models/Comercios';
 import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import Contactos from '../../db/models/Contactos';
@@ -13,12 +14,13 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		const dataCommerce: DataCommerce = req.body;
 		const { commerce, contacto } = dataCommerce;
 
+		let msg = '';
+
 		if (!dataCommerce.commerce || !dataCommerce.contacto)
 			throw { message: 'No existe comercio Para registrar', code: 400 };
 
 		//Format for CarroPago
 		const newCommerce: any = {
-			comerCantPost: 1,
 			comerDesc: commerce.comerDesc,
 			comerTipoPer: commerce.comerTipoPer,
 			comerCodigoBanco: commerce.comerCodigoBanco,
@@ -63,11 +65,10 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		if (!comercioSave) {
 			comercioSave = await getRepository(Comercios).save(newCommerce);
+			msg = 'creado';
 		} else {
-			console.log('Comercio ', commerce.comerRif, ' ya existe');
+			msg = 'ya existe';
 		}
-
-		//console.log(comercioSave);
 
 		//Contacto
 		const newContacto: any = {
@@ -81,13 +82,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			contFreg: null,
 		};
 
-		//console.log(comercioSave?.comerCod);
-
 		await getRepository(Contactos).save(newContacto);
-
-		//console.log('contacto', contactoSave);
-
-		//console.log(contactoSave);
 
 		const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
 		while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
@@ -106,11 +101,15 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
 		}
 
-		//console.log(comerXafiSave);
+		const { comerCantPost } = commerce;
 
-		const terminal = await getConnection().query(
-			`EXEC SP_new_terminal 
-			@Cant_Term = ${newCommerce.comerCantPost ? newCommerce.comerCantPost : 1},
+		console.log(comerCantPost);
+		//
+		let nroTerminals: string[] = [];
+		if (comerCantPost) {
+			const terminals = await getConnection().query(
+				`EXEC SP_new_terminal 
+			@Cant_Term = ${comerCantPost || 1},
 			@Afiliado = '720004108',
 			@NombreComercio = '${newCommerce.comerDesc}',
 			@Proveedor = 6,
@@ -119,11 +118,11 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			@TecladoAbierto = 0,
 			@Observaciones = '${newCommerce.comerObservaciones ? newCommerce.comerObservaciones : ''}',
 			@UsuarioResponsable = 'API'`
-		);
+			);
+			nroTerminals = formatTerminals(terminals);
+		}
 
-		console.log('terminal', terminal[0].id);
-
-		res.status(200).json({ message: 'comercio creado' });
+		res.status(200).json({ message: `Comercio ${commerce.comerRif} ${msg}`, terminals: nroTerminals });
 	} catch (err) {
 		res.status(400).json(err);
 	}
