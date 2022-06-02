@@ -1,4 +1,5 @@
 // modules
+import saveLogs from '../logs';
 import { NextFunction, Request, Response } from 'express';
 import { getConnection, getRepository } from 'typeorm';
 import Comercios from '../../db/models/Comercios';
@@ -43,6 +44,14 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 		};
 
 		const nroTerminals = formatTerminals(terminals);
+
+		const { id: userId }: any = req.headers.token;
+		await saveLogs(
+			userId,
+			'POST',
+			'/terminal/create',
+			`[Comercio: ${comerRif}] [Nro_Terminales: ${comerCantPost}]`
+		);
 
 		res.status(200).json({ message: 'Terminales creadas', terminals: nroTerminals });
 	} catch (err) {

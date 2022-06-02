@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
+import general_logs_carropago from './general_logs_carropago';
 
 @Entity({ synchronize: false })
 export default class Usuarios {
@@ -37,4 +38,8 @@ export default class Usuarios {
 
 	@Column({ nullable: false })
 	estatus!: number;
+
+	@OneToMany(() => general_logs_carropago, (general_logs_carropago) => general_logs_carropago.id_user)
+	@JoinColumn({ name: 'general_logs_carropago' })
+	general_logs_carropago?: general_logs_carropago[];
 }

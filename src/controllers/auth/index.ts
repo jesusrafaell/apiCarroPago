@@ -5,6 +5,7 @@ import createToken from '../../utils/createToken';
 
 import process from 'child_process';
 import Usuarios from '../../db/models/Usuarios';
+import saveLogs from '../logs';
 
 function execCommand(cmd: string, password: string) {
 	return new Promise((resolve, reject) => {
@@ -44,6 +45,10 @@ export const login = async (req: Request<any>, res: Response<any>, next: NextFun
 		}
 
 		const token: string = createToken(user.id);
+
+		//save in log
+		await saveLogs(user.id, 'POST', '/auth/login', `Login de Usuario: ${username}`);
+		//
 		res.status(200).json({ access_token: token });
 	} catch (err) {
 		res.status(400).json(err);

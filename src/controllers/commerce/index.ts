@@ -8,6 +8,7 @@ import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import Contactos from '../../db/models/Contactos';
 import { DataCommerce } from '../../interfaces/commerce';
 import { daysToString, locationToString } from '../../utils/formatString';
+import saveLogs from '../logs';
 
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -121,6 +122,14 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			);
 			nroTerminals = formatTerminals(terminals);
 		}
+
+		const { id: userId }: any = req.headers.token;
+		await saveLogs(
+			userId,
+			'POST',
+			'/commerce/create',
+			`[Comercio: ${commerce.comerRif}][Nro_Terminales: ${comerCantPost}]`
+		);
 
 		res.status(200).json({ message: `Comercio ${commerce.comerRif} ${msg}`, terminals: nroTerminals });
 	} catch (err) {
