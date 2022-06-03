@@ -3,7 +3,7 @@
 	"host": "10.198.72.31",
 	"username": "amendoza",
 	"password": "Am1523246.",
-	"database": "milpagos",
+	"database": "carropago",
 	"options": {
 		"encrypt": true,
 		"trustServerCertificate": true
