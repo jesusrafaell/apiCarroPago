@@ -9,6 +9,7 @@ import Contactos from '../../db/models/Contactos';
 import { DataCommerce } from '../../interfaces/commerce';
 import { daysToString, locationToString } from '../../utils/formatString';
 import saveLogs from '../logs';
+import { createAbono } from './abono';
 
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -60,7 +61,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerFechaGarFian: null,
 		};
 
-		let comercioSave = await getRepository(Comercios).findOne({
+		let comercioSave: Comercios | undefined = await getRepository(Comercios).findOne({
 			where: { comerRif: commerce.comerRif },
 		});
 
@@ -121,6 +122,11 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			@UsuarioResponsable = 'API'`
 			);
 			nroTerminals = formatTerminals(terminals);
+		}
+		const resAbono = await createAbono(nroTerminals, comercioSave!, comerXafiSave.cxaCodAfi);
+
+		if (!resAbono.ok) {
+			throw { message: 'Error al crear los abonos' };
 		}
 
 		const { id: userId }: any = req.headers.token;

@@ -4,6 +4,9 @@ import { NextFunction, Request, Response } from 'express';
 import { getConnection, getRepository } from 'typeorm';
 import Comercios from '../../db/models/Comercios';
 import { CreateTermianls } from '../../interfaces/createTerminals';
+import { createAbono } from '../commerce/abono';
+import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
+import { formatTerminals } from '../../utils/formatTerminals';
 
 export const createTerminals = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -22,6 +25,13 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 		});
 
 		if (!commerce) throw { message: 'El comercio no existe' };
+
+		const comerXafi = await getRepository(ComerciosXafiliado).findOne({
+			where: { cxaCodComer: commerce.comerCod },
+		});
+
+		if (!comerXafi) throw { message: 'El comercio no tiene un numero de afiliado' };
+
 		const terminals = await getConnection().query(
 			`EXEC SP_new_terminal 
 			@Cant_Term = ${comerCantPost},
@@ -35,15 +45,12 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 			@UsuarioResponsable = 'API'`
 		);
 
-		const formatTerminals = (terminals: any[]) => {
-			let list: any[] = [];
-			for (let i = 0; i < terminals.length; i++) {
-				list.push(terminals[i].id);
-			}
-			return list;
-		};
-
 		const nroTerminals = formatTerminals(terminals);
+
+		const resAbono = await createAbono(nroTerminals, commerce!, comerXafi.cxaCodAfi);
+		if (!resAbono.ok) {
+			throw { message: 'Error al crear los abonos' };
+		}
 
 		const { id: userId }: any = req.headers.token;
 		await saveLogs(
