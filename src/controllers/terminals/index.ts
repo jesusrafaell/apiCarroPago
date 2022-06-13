@@ -7,6 +7,7 @@ import { CreateTermianls } from '../../interfaces/createTerminals';
 import { createAbono } from '../commerce/abono';
 import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import { formatTerminals } from '../../utils/formatTerminals';
+import Abonos from '../../db/models/Abonos';
 
 export const createTerminals = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -62,6 +63,67 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 
 		res.status(200).json({ message: 'Terminales creadas', terminals: nroTerminals });
 	} catch (err) {
+		console.log(err);
+		res.status(400).json(err);
+	}
+};
+
+export const getTerminalsXcommercio = async (
+	req: Request<any>,
+	res: Response,
+	next: NextFunction
+): Promise<void> => {
+	try {
+		const { comerRif } = req.params;
+		if (!comerRif) {
+			throw { message: 'Necesita ingresar el rif del comercio' };
+		}
+
+		//Format for CarroPago
+
+		const commerce = await getRepository(Comercios).findOne({
+			where: { comerRif },
+		});
+
+		if (!commerce) throw { message: 'El comercio no existe' };
+
+		const terminales = await getRepository(Abonos).find({
+			where: { aboCodComercio: commerce.comerCod },
+		});
+
+		if (!terminales.length) throw { message: 'El comercio no tiene terminales' };
+
+		const formatTerminalsFromAbono = (terminals: Abonos[]): string => {
+			let list: string = '';
+			for (let i = 0; i < terminals.length; i++) {
+				list += terminals[i].aboTerminal + (i < terminals.length - 1 ? ',' : '');
+			}
+			return list;
+		};
+
+		const terminalsXCommerce: string = formatTerminalsFromAbono(terminales);
+
+		/*
+		const terminals = await getConnection().query(
+			`EXEC SP_new_terminal 
+			@Cant_Term = ${comerCantPost},
+			@Afiliado = '720004108',
+			@NombreComercio = '${commerce.comerDesc}',
+			@Proveedor = 6,
+			@TipoPos = 'IWL250 GPRS',
+			@Modo = 'Comercio',
+			@TecladoAbierto = 0,
+			@Observaciones = '${commerce.comerObservaciones ? commerce.comerObservaciones : ''}',
+			@UsuarioResponsable = 'API'`
+		);
+		*/
+
+		const { id: userId }: any = req.headers.token;
+		await saveLogs(userId, 'GET', '/terminals/commerce', `[Comercio: ${comerRif}]`);
+
+		res.status(200).json({ message: `Terminales del comercio: ${comerRif}`, terminals: terminalsXCommerce });
+	} catch (err) {
+		console.log(err);
 		res.status(400).json(err);
 	}
 };
