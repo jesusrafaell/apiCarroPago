@@ -96,7 +96,7 @@ export const getTerminalsXcommercio = async (
 		const formatTerminalsFromAbono = (terminals: Abonos[]): string => {
 			let list: string = '';
 			for (let i = 0; i < terminals.length; i++) {
-				list += terminals[i].aboTerminal + (i < terminals.length - 1 ? ',' : '');
+				list += `'${terminals[i].aboTerminal}'` + (i < terminals.length - 1 ? ',' : '');
 			}
 			return list;
 		};
