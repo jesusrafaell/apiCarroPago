@@ -6,8 +6,9 @@ import Comercios from '../../db/models/Comercios';
 import { CreateTermianls } from '../../interfaces/createTerminals';
 import { createAbono } from '../commerce/abono';
 import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
-import { formatTerminals } from '../../utils/formatTerminals';
+import { formatTerminals, formatTerminalsFromAbono, formatTerminalsStatus } from '../../utils/formatTerminals';
 import Abonos from '../../db/models/Abonos';
+import { TerminalSP_Veiws, TerminalStatus } from '../../interfaces/terminals';
 
 export const createTerminals = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -93,35 +94,19 @@ export const getTerminalsXcommercio = async (
 
 		if (!terminales.length) throw { message: 'El comercio no tiene terminales' };
 
-		const formatTerminalsFromAbono = (terminals: Abonos[]): string => {
-			let list: string = '';
-			for (let i = 0; i < terminals.length; i++) {
-				list += `'${terminals[i].aboTerminal}'` + (i < terminals.length - 1 ? ',' : '');
-			}
-			return list;
-		};
-
 		const terminalsXCommerce: string = formatTerminalsFromAbono(terminales);
 
-		/*
-		const terminals = await getConnection().query(
-			`EXEC SP_new_terminal 
-			@Cant_Term = ${comerCantPost},
-			@Afiliado = '720004108',
-			@NombreComercio = '${commerce.comerDesc}',
-			@Proveedor = 6,
-			@TipoPos = 'IWL250 GPRS',
-			@Modo = 'Comercio',
-			@TecladoAbierto = 0,
-			@Observaciones = '${commerce.comerObservaciones ? commerce.comerObservaciones : ''}',
-			@UsuarioResponsable = 'API'`
+		const terminalsData: TerminalSP_Veiws[] = await getConnection().query(
+			`EXEC SP_views_terminals 
+			@Valor_Busq = [${terminalsXCommerce}]`
 		);
-		*/
+
+		const statusTerminals: TerminalStatus[] = formatTerminalsStatus(terminalsData);
 
 		const { id: userId }: any = req.headers.token;
 		await saveLogs(userId, 'GET', '/terminals/commerce', `[Comercio: ${comerRif}]`);
 
-		res.status(200).json({ message: `Terminales del comercio: ${comerRif}`, terminals: terminalsXCommerce });
+		res.status(200).json({ message: `Terminales del comercio: ${comerRif}`, terminals: statusTerminals });
 	} catch (err) {
 		console.log(err);
 		res.status(400).json(err);
