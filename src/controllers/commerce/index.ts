@@ -67,70 +67,43 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		if (!comercioSave) {
 			comercioSave = await getRepository(Comercios).save(newCommerce);
+
+			//Contacto
+			const newContacto: any = {
+				contCodComer: comercioSave!.comerCod,
+				contNombres: contacto.contNombres,
+				contApellidos: contacto.contApellidos,
+				contTelefLoc: contacto.contTelefLoc,
+				contTelefMov: contacto.contTelefLoc,
+				contMail: contacto.contMail,
+				contCodUsuario: null,
+				contFreg: null,
+			};
+
+			await getRepository(Contactos).save(newContacto);
+
+			const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
+			while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
+			const cxaCod: string = cxaCodAfi.join('');
+
+			let comerXafiSave = await getRepository(ComerciosXafiliado).findOne({
+				where: { cxaCodComer: comercioSave!.comerCod },
+			});
+
+			if (!comerXafiSave) {
+				comerXafiSave = await getRepository(ComerciosXafiliado).save({
+					cxaCodAfi: cxaCod,
+					cxaCodComer: comercioSave!.comerCod,
+				});
+			} else {
+				console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
+			}
 			msg = 'creado exitosamente';
 		} else {
-			res.status(400).json({ message: `Comercio ${commerce.comerRif} ya se encuentra registrado` });
+			throw {
+				message: `Comercio ${commerce.comerRif} ya se encuentra registrado`,
+			};
 		}
-
-		//Contacto
-		const newContacto: any = {
-			contCodComer: comercioSave!.comerCod,
-			contNombres: contacto.contNombres,
-			contApellidos: contacto.contApellidos,
-			contTelefLoc: contacto.contTelefLoc,
-			contTelefMov: contacto.contTelefLoc,
-			contMail: contacto.contMail,
-			contCodUsuario: null,
-			contFreg: null,
-		};
-
-		await getRepository(Contactos).save(newContacto);
-
-		const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
-		while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
-		const cxaCod: string = cxaCodAfi.join('');
-
-		let comerXafiSave = await getRepository(ComerciosXafiliado).findOne({
-			where: { cxaCodComer: comercioSave!.comerCod },
-		});
-
-		if (!comerXafiSave) {
-			comerXafiSave = await getRepository(ComerciosXafiliado).save({
-				cxaCodAfi: cxaCod,
-				cxaCodComer: comercioSave!.comerCod,
-			});
-		} else {
-			console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
-		}
-
-		//const { comerCantPost } = commerce;
-
-		/*
-		console.log(comerCantPost);
-		//
-		let nroTerminals: string[] = [];
-		if (comerCantPost) {
-			const terminals = await getConnection().query(
-				`EXEC SP_new_terminal 
-			@Cant_Term = ${comerCantPost || 1},
-			@Afiliado = '720004108',
-			@NombreComercio = '${newCommerce.comerDesc}',
-			@Proveedor = 6,
-			@TipoPos = 'IWL250 GPRS',
-			@Modo = 'Comercio',
-			@TecladoAbierto = 0,
-			@Observaciones = '${newCommerce.comerObservaciones ? newCommerce.comerObservaciones : ''}',
-			@UsuarioResponsable = 'API'`
-			);
-			nroTerminals = formatTerminals(terminals);
-		}
-		const resAbono = await createAbono(nroTerminals, comercioSave!, comerXafiSave.cxaCodAfi);
-
-		if (!resAbono.ok) {
-			throw { message: 'Error al crear los abonos' };
-		}
-
-		*/
 
 		const { id: userId }: any = req.headers.token;
 		await saveLogs(userId, 'POST', '/commerce/create', `[Comercio: ${commerce.comerRif}]`);
