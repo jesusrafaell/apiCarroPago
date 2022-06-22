@@ -67,9 +67,9 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		if (!comercioSave) {
 			comercioSave = await getRepository(Comercios).save(newCommerce);
-			msg = 'creado';
+			msg = 'creado exitosamente';
 		} else {
-			msg = 'ya existe';
+			res.status(400).json({ message: `Comercio ${commerce.comerRif} ya se encuentra registrado` });
 		}
 
 		//Contacto
@@ -103,8 +103,9 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
 		}
 
-		const { comerCantPost } = commerce;
+		//const { comerCantPost } = commerce;
 
+		/*
 		console.log(comerCantPost);
 		//
 		let nroTerminals: string[] = [];
@@ -129,15 +130,12 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			throw { message: 'Error al crear los abonos' };
 		}
 
-		const { id: userId }: any = req.headers.token;
-		await saveLogs(
-			userId,
-			'POST',
-			'/commerce/create',
-			`[Comercio: ${commerce.comerRif}][Nro_Terminales: ${comerCantPost}]`
-		);
+		*/
 
-		res.status(200).json({ message: `Comercio ${commerce.comerRif} ${msg}`, terminals: nroTerminals });
+		const { id: userId }: any = req.headers.token;
+		await saveLogs(userId, 'POST', '/commerce/create', `[Comercio: ${commerce.comerRif}]`);
+
+		res.status(200).json({ message: `Comercio ${commerce.comerRif} ${msg}` });
 	} catch (err) {
 		res.status(400).json(err);
 	}
