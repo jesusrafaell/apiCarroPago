@@ -13,7 +13,8 @@ before_script:
   - eval "$(ssh-agent -s)"
   - echo $IP_REMOTEQA
   - which ssh-agent
-  
+  - echo $IP_REMOTEPRO
+  - which ssh-agent
   
 deploy_qa:
   stage: deploy
