@@ -13,13 +13,12 @@ import { TerminalSP_Veiws, TerminalStatus } from '../../interfaces/terminals';
 export const createTerminals = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
 		const dataCreateTerminals: CreateTermianls = req.body;
-		const { comerRif, comerCantPost } = dataCreateTerminals;
-		if (!comerRif || !comerCantPost) {
-			throw { message: 'Necesita ingresar el rif del comercio y el numero de terminales' };
+		const { comerRif, comerCantPost, afiliado } = dataCreateTerminals;
+		if (!comerRif || !comerCantPost || !afiliado) {
+			throw { message: 'Necesita ingresar el numero de afiliado, el rif del comercio y el numero de terminales' };
 		}
 
 		let msg = '';
-
 		//Format for CarroPago
 
 		const commerce = await getRepository(Comercios).findOne({
@@ -37,7 +36,7 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 		const terminals = await getConnection().query(
 			`EXEC SP_new_terminal 
 			@Cant_Term = ${comerCantPost},
-			@Afiliado = '720004108',
+			@Afiliado = ${afiliado},
 			@NombreComercio = '${commerce.comerDesc}',
 			@Proveedor = 6,
 			@TipoPos = 'IWL250 GPRS',
