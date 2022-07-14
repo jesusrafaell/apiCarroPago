@@ -37,11 +37,10 @@ export const login = async (req: Request<any>, res: Response<any>, next: NextFun
 			},
 		});
 
-		if (!user) throw { message: 'Usuario: acceso denegado', code: 400 };
+		if (!user) throw { message: 'Error: usuario o clave invalida', code: 400 };
 
-		if (user.perfilId !== 23) {
-			//No puede crear comercio por la api
-			throw { message: 'Este Usuario no tiene acceso a la API', code: 400 };
+		if (user.perfilId !== 35) {
+			throw { message: 'Este Usuario no tiene el perfil correcto', code: 400 };
 		}
 
 		const token: string = createToken(user.id);
