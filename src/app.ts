@@ -2,10 +2,13 @@ import { createConnection } from 'typeorm';
 import express from 'express';
 import Routes from './router';
 import cors from './Middlewares/secure';
+import dotenv from 'dotenv';
 import { preRoutes } from './Middlewares';
 
 createConnection()
 	.then(async () => {
+		dotenv.config();
+
 		const app = express();
 
 		app.use(express.json());

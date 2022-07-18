@@ -2,14 +2,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { DateTime } from 'luxon';
 import { getConnection, getRepository } from 'typeorm';
-import { formatTerminals } from '../../utils/formatTerminals';
 import Comercios from '../../db/models/Comercios';
-import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import Contactos from '../../db/models/Contactos';
 import { DataCommerce } from '../../interfaces/commerce';
+import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
+import ComisionesMilPagos from '../../db/models/ComisionesMilPagos';
 import { daysToString, locationToString } from '../../utils/formatString';
 import saveLogs from '../logs';
-import { createAbono } from './abono';
 
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -20,6 +19,13 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 
 		if (!dataCommerce.commerce || !dataCommerce.contacto)
 			throw { message: 'No existe comercio Para registrar', code: 400 };
+
+		const numeros = '0123456789';
+		if (numeros.indexOf(commerce.comerRif[0]) != -1) {
+			throw { message: 'El rif del comercio es invalido (Debe comenzar con una letra)' };
+		}
+
+		if (commerce.comerRif.length > 10) throw { message: 'El rif del comercio es invalido (Muy largo)' };
 
 		//Format for CarroPago
 		const newCommerce: any = {
@@ -45,7 +51,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerRecaudos: null,
 			comerDireccion: locationToString(commerce.locationCommerce),
 			comerObservaciones: commerce.comerObservaciones,
-			comerCodAliado: commerce.comerCodAliado,
+			comerCodAliado: 84,
 			comerEstatus: 5,
 			comerHorario: null,
 			comerImagen: null,
@@ -86,6 +92,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
 			const cxaCod: string = cxaCodAfi.join('');
 
+			//Crear comerxafiliado
 			let comerXafiSave = await getRepository(ComerciosXafiliado).findOne({
 				where: { cxaCodComer: comercioSave!.comerCod },
 			});
@@ -96,8 +103,33 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 					cxaCodComer: comercioSave!.comerCod,
 				});
 			} else {
-				console.log('ComercioXafiliado ', contacto.contMail, ' ya existe');
+				console.log('ComercioXafiliado ya existe', comercioSave?.comerCod);
 			}
+
+			//Crear Comision
+			let comisionSave = await getRepository(ComisionesMilPagos).findOne({
+				where: { cmCodComercio: comercioSave!.comerCod },
+			});
+
+			if (!comisionSave) {
+				await getConnection().query(
+					`
+						INSERT INTO [dbo].[ComisionesMilPagos]
+							([cmCodComercio] ,[cmPorcentaje])
+						VALUES (${comercioSave?.comerCod} ,0)				
+					`
+				);
+				/*
+				comisionSave = await getRepository(ComisionesMilPagos).save({
+					cmCodComercio: comercioSave!.comerCod,
+					cmPorcentaje: 0,
+				});
+				*/
+			} else {
+				console.log('Comision ya existe', comercioSave?.comerCod);
+			}
+
+			//
 			msg = 'creado exitosamente';
 		} else {
 			throw {
@@ -109,7 +141,10 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		await saveLogs(userId, 'POST', '/commerce/create', `[Comercio: ${commerce.comerRif}]`);
 
 		res.status(200).json({ message: `Comercio ${commerce.comerRif} ${msg}` });
-	} catch (err) {
-		res.status(400).json(err);
+	} catch (err: any) {
+		console.log(err);
+		if (err.message) {
+			res.status(400).json(err);
+		} else res.status(400).json('Error en la Base de Datos');
 	}
 };
