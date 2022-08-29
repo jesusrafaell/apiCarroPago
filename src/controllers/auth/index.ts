@@ -1,11 +1,11 @@
-// modules
 import { NextFunction, Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import createToken from '../../utils/createToken';
 
 import process from 'child_process';
 import Usuarios from '../../db/models/Usuarios';
 import saveLogs from '../logs';
+import createToken from '../../utils/createToken';
+import { perfilAuth } from '../../utils/perfil';
 
 function execCommand(cmd: string, password: string) {
 	return new Promise((resolve, reject) => {
@@ -25,6 +25,7 @@ interface User {
 
 export const login = async (req: Request<any>, res: Response<any>, next: NextFunction): Promise<void> => {
 	try {
+		console.log(perfilAuth);
 		const { username, pass }: User = req.body;
 
 		if (!req.body || !username || !pass) throw { message: 'Se necesita login', code: 400 };

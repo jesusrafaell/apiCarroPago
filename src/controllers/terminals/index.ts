@@ -1,14 +1,15 @@
 // modules
 import saveLogs from '../logs';
+import { TerminalSP_Veiws, TerminalStatus } from '../../interfaces/terminals';
 import { NextFunction, Request, Response } from 'express';
 import { AfterLoad, getConnection, getRepository } from 'typeorm';
-import Comercios from '../../db/models/Comercios';
 import { CreateTermianls } from '../../interfaces/createTerminals';
 import { createAbono } from '../commerce/abono';
-import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import { formatTerminals, formatTerminalsFromAbono, formatTerminalsStatus } from '../../utils/formatTerminals';
+import Comercios from '../../db/models/Comercios';
 import Abonos from '../../db/models/Abonos';
-import { TerminalSP_Veiws, TerminalStatus } from '../../interfaces/terminals';
+import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
+import Afiliados from '../../db/models/Afiliados';
 
 export const createTerminals = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -33,17 +34,22 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 
 		if (!comerXafi) throw { message: 'El comercio no tiene un numero de afiliado' };
 
-		const afiliado = `${Number(comerXafi.cxaCodAfi)}`;
+		const afiliado = await getRepository(Afiliados).findOne({
+			where: { afiCod: comerXafi.cxaCodAfi },
+		});
 
-		//console.log('Rif', commerce.comerRif, '/ Afiliado', afiliado);
+		if (!afiliado) throw { message: 'No se encontro nombre del afiliado' };
 
-		const nameCommerce: string = commerce.comerDesc.slice(0, 39);
+		const numAfiliado = `${Number(comerXafi.cxaCodAfi)}`;
+		const auxName: string = afiliado.afiDesc.length > 39 ? afiliado.afiDesc.slice(0, 39) : afiliado.afiDesc;
+
+		//console.log('Rif', commerce.comerRif, '/ Afiliado', numAfiliado);
 
 		const terminals = await getConnection().query(
 			`EXEC SP_new_terminal 
 			@Cant_Term = ${comerCantPost},
-			@Afiliado = '${afiliado}',
-			@NombreComercio = '${nameCommerce}',
+			@Afiliado = '${numAfiliado}',
+			@NombreComercio = '${auxName}',
 			@Proveedor = 6,
 			@TipoPos = 'IWL250 GPRS',
 			@Modo = 'Comercio',
