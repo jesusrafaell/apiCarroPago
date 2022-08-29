@@ -25,6 +25,10 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			throw { message: 'El rif del comercio es invalido (Debe comenzar con una letra)' };
 		}
 
+		if (commerce.idActivityXAfiliado === '000000720004108' || Number(commerce.idActivityXAfiliado) === 720004108) {
+			throw { message: 'No puedes crear comercio con el afiliado: 000000720004108' };
+		}
+
 		if (commerce.comerRif.length > 10) throw { message: 'El rif del comercio es invalido (Muy largo)' };
 
 		//Format for CarroPago

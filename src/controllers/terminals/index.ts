@@ -35,13 +35,15 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 
 		const afiliado = `${Number(comerXafi.cxaCodAfi)}`;
 
-		console.log('Rif', commerce.comerRif, '/ Afiliado', afiliado);
+		//console.log('Rif', commerce.comerRif, '/ Afiliado', afiliado);
+
+		const nameCommerce: string = commerce.comerDesc.slice(0, 39);
 
 		const terminals = await getConnection().query(
 			`EXEC SP_new_terminal 
 			@Cant_Term = ${comerCantPost},
 			@Afiliado = '${afiliado}',
-			@NombreComercio = '${commerce.comerDesc}',
+			@NombreComercio = '${nameCommerce}',
 			@Proveedor = 6,
 			@TipoPos = 'IWL250 GPRS',
 			@Modo = 'Comercio',
@@ -81,7 +83,7 @@ export const createTerminals = async (req: Request<any>, res: Response, next: Ne
 		}
 	} catch (err) {
 		console.log(err);
-		res.status(400).json(err);
+		res.status(400).json({ message: 'Error en base de datos', info: err });
 	}
 };
 
@@ -125,6 +127,6 @@ export const getTerminalsXcommercio = async (
 		res.status(200).json({ message: `Terminales del comercio: ${comerRif}`, terminals: statusTerminals });
 	} catch (err) {
 		console.log(err);
-		res.status(400).json(err);
+		res.status(400).json({ message: 'Error en base de datos', info: err });
 	}
 };
