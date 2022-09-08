@@ -9,6 +9,8 @@ import ComerciosXafiliado from '../../db/models/ComerciosXafliado';
 import ComisionesMilPagos from '../../db/models/ComisionesMilPagos';
 import { daysToString, locationToString } from '../../utils/formatString';
 import saveLogs from '../logs';
+import CategoriasXafiliado from '../../db/models/CategoriasXafiliado';
+import Afiliados from '../../db/models/Afiliados';
 
 export const createCommerce = async (req: Request<any>, res: Response, next: NextFunction): Promise<void> => {
 	try {
@@ -25,11 +27,27 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			throw { message: 'El rif del comercio es invalido (Debe comenzar con una letra)' };
 		}
 
-		if (commerce.idActivityXAfiliado === '000000720004108' || Number(commerce.idActivityXAfiliado) === 720004108) {
-			throw { message: 'No puedes crear comercio con el afiliado: 000000720004108' };
+		if (commerce.comerRif.length > 10) throw { message: 'El rif del comercio es invalido (Muy largo)' };
+
+		const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
+		while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
+		const cxaCod: string = cxaCodAfi.join('');
+
+		const afiliado: Afiliados | undefined = await getRepository(Afiliados).findOne(cxaCod);
+
+		if (!afiliado) throw { message: `No existe el numero de afiliado: ${cxaCod}` };
+
+		if (Number(commerce.idActivityXAfiliado) !== 720008177) {
+			throw { message: 'No puedes crear comercio con ese afiliado' };
 		}
 
-		if (commerce.comerRif.length > 10) throw { message: 'El rif del comercio es invalido (Muy largo)' };
+		const categoria: CategoriasXafiliado | undefined = await getRepository(CategoriasXafiliado).findOne({
+			where: {
+				catCodAfi: commerce.idActivityXAfiliado,
+			},
+		});
+
+		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
 
 		//Format for CarroPago
 		const newCommerce: any = {
@@ -46,7 +64,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerInicioContrato: DateTime.local().toISODate(),
 			comerFinContrato: DateTime.local().plus({ years: 1 }).toISODate(),
 			comerExcluirPago: 0,
-			comerCodCategoria: 5411,
+			comerCodCategoria: categoria.catCodCat,
 			comerGarantiaFianza: 1,
 			comerModalidadGarantia: 1,
 			comerMontoGarFian: 7.77,
@@ -91,10 +109,6 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			};
 
 			await getRepository(Contactos).save(newContacto);
-
-			const cxaCodAfi = `${commerce.idActivityXAfiliado}`.split('');
-			while (cxaCodAfi.length < 15) cxaCodAfi.unshift('0');
-			const cxaCod: string = cxaCodAfi.join('');
 
 			//Crear comerxafiliado
 			let comerXafiSave = await getRepository(ComerciosXafiliado).findOne({
