@@ -41,13 +41,16 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			throw { message: 'No puedes crear comercio con ese afiliado' };
 		}
 
+		/*
 		const categoria: CategoriasXafiliado | undefined = await getRepository(CategoriasXafiliado).findOne({
 			where: {
-				catCodAfi: commerce.idActivityXAfiliado,
+				catCodAfi: afiliado.afiCod,
 			},
 		});
 
+		//console.log('categoia', caterogia);
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
+		*/
 
 		//Format for CarroPago
 		const newCommerce: any = {
@@ -64,7 +67,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerInicioContrato: DateTime.local().toISODate(),
 			comerFinContrato: DateTime.local().plus({ years: 1 }).toISODate(),
 			comerExcluirPago: 0,
-			comerCodCategoria: categoria.catCodCat,
+			comerCodCategoria: 5200,
 			comerGarantiaFianza: 1,
 			comerModalidadGarantia: 1,
 			comerMontoGarFian: 7.77,
