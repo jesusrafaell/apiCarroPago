@@ -41,7 +41,6 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			throw { message: 'No puedes crear comercio con ese afiliado' };
 		}
 
-		/*
 		const categoria: CategoriasXafiliado | undefined = await getRepository(CategoriasXafiliado).findOne({
 			where: {
 				catCodAfi: afiliado.afiCod,
@@ -49,6 +48,9 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		});
 
 		//console.log('categoia', caterogia);
+		console.log('afiliado:', afiliado.afiCod);
+		console.log('caterogia:', categoria?.catCodCat);
+		/*
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
 		*/
 
