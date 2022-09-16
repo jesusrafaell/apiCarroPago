@@ -50,9 +50,8 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		//console.log('categoia', caterogia);
 		console.log('afiliado:', afiliado.afiCod);
 		console.log('caterogia:', categoria?.catCodCat);
-		/*
+
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
-		*/
 
 		//Format for CarroPago
 		const newCommerce: any = {
@@ -69,7 +68,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerInicioContrato: DateTime.local().toISODate(),
 			comerFinContrato: DateTime.local().plus({ years: 1 }).toISODate(),
 			comerExcluirPago: 0,
-			comerCodCategoria: 5200,
+			comerCodCategoria: categoria.catCodCat,
 			comerGarantiaFianza: 1,
 			comerModalidadGarantia: 1,
 			comerMontoGarFian: 7.77,
