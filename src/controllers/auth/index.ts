@@ -25,7 +25,7 @@ interface User {
 
 export const login = async (req: Request<any>, res: Response<any>, next: NextFunction): Promise<void> => {
 	try {
-		console.log(perfilAuth);
+		//console.log(perfilAuth);
 		const { username, pass }: User = req.body;
 
 		if (!req.body || !username || !pass) throw { message: 'Se necesita login', code: 400 };

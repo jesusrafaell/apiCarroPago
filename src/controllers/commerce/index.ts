@@ -52,7 +52,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
 
 		//Format for CarroPago
-		const newCommerce: Comercios = {
+		const newCommerce: any = {
 			comerDesc: commerce.comerDesc,
 			comerTipoPer: Number(commerce.comerTipoPer),
 			comerCodigoBanco: commerce.comerCodigoBanco,

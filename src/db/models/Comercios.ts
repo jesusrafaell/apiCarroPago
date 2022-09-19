@@ -21,7 +21,7 @@ export default class Comercios {
 	comerPagaIva!: string;
 
 	@Column({ nullable: true })
-	comerCodUsuario!: string | null;
+	comerCodUsuario!: string;
 
 	@Column({ nullable: true })
 	comerCodPadre!: number;
@@ -30,7 +30,7 @@ export default class Comercios {
 	comerRif!: string;
 
 	@Column({ nullable: true })
-	comerFreg!: string | null;
+	comerFreg!: string;
 
 	@Column({ nullable: true })
 	comerCodTipoCont!: number;
@@ -63,7 +63,7 @@ export default class Comercios {
 	comerTipoPos!: number;
 
 	@Column({ nullable: true })
-	comerRecaudos!: string | null;
+	comerRecaudos!: string;
 
 	@Column({ nullable: true })
 	comerDireccion!: string;
@@ -78,10 +78,10 @@ export default class Comercios {
 	comerEstatus!: number;
 
 	@Column({ nullable: true })
-	comerHorario!: string | null;
+	comerHorario!: string;
 
 	@Column({ nullable: true, type: 'image' })
-	comerImagen!: string | null;
+	comerImagen!: string;
 
 	@Column({ nullable: true })
 	comerPuntoAdicional!: number;
@@ -108,5 +108,5 @@ export default class Comercios {
 	comerDiasOperacion!: string;
 
 	@Column({ nullable: true })
-	comerFechaGarFian!: string | null;
+	comerFechaGarFian!: string;
 }
