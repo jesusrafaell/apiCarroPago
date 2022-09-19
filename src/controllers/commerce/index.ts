@@ -47,9 +47,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			},
 		});
 
-		//console.log('categoia', caterogia);
-		console.log('afiliado:', afiliado.afiCod);
-		console.log('caterogia:', categoria?.catCodCat);
+		console.log('afiliado:', afiliado.afiCod, '/ caterogia:', categoria?.catCodCat);
 
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
 
