@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity({ synchronize: false })
 export default class Comercios {
 	@PrimaryGeneratedColumn()
-	comerCod!: number;
+	comerCod?: number;
 
 	@Column({ nullable: true })
 	comerDesc!: string;
@@ -21,7 +21,7 @@ export default class Comercios {
 	comerPagaIva!: string;
 
 	@Column({ nullable: true })
-	comerCodUsuario!: string;
+	comerCodUsuario!: string | null;
 
 	@Column({ nullable: true })
 	comerCodPadre!: number;
@@ -30,7 +30,7 @@ export default class Comercios {
 	comerRif!: string;
 
 	@Column({ nullable: true })
-	comerFreg!: string;
+	comerFreg!: string | null;
 
 	@Column({ nullable: true })
 	comerCodTipoCont!: number;
@@ -63,7 +63,7 @@ export default class Comercios {
 	comerTipoPos!: number;
 
 	@Column({ nullable: true })
-	comerRecaudos!: string;
+	comerRecaudos!: string | null;
 
 	@Column({ nullable: true })
 	comerDireccion!: string;
@@ -78,10 +78,10 @@ export default class Comercios {
 	comerEstatus!: number;
 
 	@Column({ nullable: true })
-	comerHorario!: string;
+	comerHorario!: string | null;
 
 	@Column({ nullable: true, type: 'image' })
-	comerImagen!: string;
+	comerImagen!: string | null;
 
 	@Column({ nullable: true })
 	comerPuntoAdicional!: number;
@@ -108,5 +108,5 @@ export default class Comercios {
 	comerDiasOperacion!: string;
 
 	@Column({ nullable: true })
-	comerFechaGarFian!: string;
+	comerFechaGarFian!: string | null;
 }

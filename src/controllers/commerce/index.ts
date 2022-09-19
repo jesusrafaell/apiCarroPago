@@ -54,9 +54,9 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 		if (!categoria) throw { message: 'No existe categoria de ese afiliado' };
 
 		//Format for CarroPago
-		const newCommerce: any = {
+		const newCommerce: Comercios = {
 			comerDesc: commerce.comerDesc,
-			comerTipoPer: commerce.comerTipoPer,
+			comerTipoPer: Number(commerce.comerTipoPer),
 			comerCodigoBanco: commerce.comerCodigoBanco,
 			comerCuentaBanco: commerce.comerCuentaBanco,
 			comerPagaIva: 'SI',
@@ -64,7 +64,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerCodPadre: 0,
 			comerRif: commerce.comerRif,
 			comerFreg: null,
-			comerCodTipoCont: commerce.comerCodTipoCont,
+			comerCodTipoCont: Number(commerce.comerCodTipoCont),
 			comerInicioContrato: DateTime.local().toISODate(),
 			comerFinContrato: DateTime.local().plus({ years: 1 }).toISODate(),
 			comerExcluirPago: 0,
@@ -73,7 +73,7 @@ export const createCommerce = async (req: Request<any>, res: Response, next: Nex
 			comerModalidadGarantia: 1,
 			comerMontoGarFian: 7.77,
 			comerModalidadPos: 3,
-			comerTipoPos: commerce.comerTipoPos,
+			comerTipoPos: Number(commerce.comerTipoPos),
 			comerRecaudos: null,
 			comerDireccion: locationToString(commerce.locationCommerce),
 			comerObservaciones: commerce.comerObservaciones,
