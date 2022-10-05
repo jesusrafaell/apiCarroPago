@@ -1,5 +1,6 @@
 export interface DataCommerce {
 	commerce: {
+		comerCantPost: number | null;
 		idActivityXAfiliado: string;
 		comerDesc: string;
 		comerTipoPer: string;

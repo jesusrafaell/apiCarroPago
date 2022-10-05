@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import list from './list';
+require('dotenv').config();
 const Key: string = process.env.SECRET!;
 
 /** this middleware is for convert json web token in Objet format */

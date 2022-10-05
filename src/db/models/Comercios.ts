@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity({ synchronize: false })
 export default class Comercios {
 	@PrimaryGeneratedColumn()
-	comerCod!: number;
+	comerCod?: number;
 
 	@Column({ nullable: true })
 	comerDesc!: string;

@@ -1,0 +1,38 @@
+before_script:
+  - apt-get update -qq
+  - apt-get install -qq git dos2unix
+  - mkdir ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
+    ~/.ssh/config'
+  - echo $SSH_KEY_QA >> ~/.ssh/key_64.pem
+  - cat ~/.ssh/key_64.pem |base64 -d > ~/.ssh/keyqa.pem
+  - chmod 400 ~/.ssh/keyqa.pem
+  - echo $IP_REMOTEQA
+  - which ssh-agent
+  - echo "#####################################################"
+  - echo $SSH_PRIVATE_KEY >> ~/.ssh/keypro_64.pem
+  - cat ~/.ssh/keypro_64.pem |base64 -d > ~/.ssh/keypro.pem
+  - chmod 400 ~/.ssh/keypro.pem
+  - cat ~/.ssh/keypro.pem
+  - eval "$(ssh-agent -s)"
+  - echo $IP_REMOTEPRO
+  - which ssh-agent
+  
+deploy_qa:
+  stage: deploy
+  script:
+    - ssh  -i ~/.ssh/keyqa.pem $USUARIO@$IP_REMOTEQA " cd $DOCUMENT_ROOT/ && sudo git checkout qa && sudo git pull "
+    - ssh  -i ~/.ssh/keyqa.pem $USUARIO@$IP_REMOTEQA " cd $DOCUMENT_ROOT && sudo  pm2 restart api-carropago"
+  only:
+    - qa
+deploy_produccion: 
+  stage: deploy
+  script: 
+     
+    - ssh  -i ~/.ssh/keypro.pem $USUARIO@$IP_REMOTEPRO " cd $DOCUMENT_ROOT/ && sudo git checkout master && sudo git pull "
+    - ssh  -i ~/.ssh/keypro.pem $USUARIO@$IP_REMOTEPRO " cd $DOCUMENT_ROOT && sudo pm2 restart api-carropago  "
+  only: 
+    - master  
+
+
+
